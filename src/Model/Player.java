@@ -5,7 +5,7 @@ import java.util.*;
 public class Player {
 	private ArrayList<Card> hand = new ArrayList<Card>();
 	private String name;
-	private String address;
+	private int port;
 	private int playerNum;
 	private boolean control = false;
 	private boolean done = false;
@@ -18,12 +18,12 @@ public class Player {
 		return this.name;
 	}
 	
-	public void setAddress(String address){
-		this.address = address;
+	public void setPort(int port){
+		this.port = port;
 	}
 	
-	public String getAddress(){
-		return this.address;
+	public int getPort(){
+		return this.port;
 	}
 	
 	public void setNum(int num){

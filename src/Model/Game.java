@@ -1,6 +1,8 @@
 package Model;
 
+import java.io.IOException;
 import java.util.*;
+import Connection.*;
 
 public class Game {
 	private int numOfPlayers;
@@ -10,20 +12,43 @@ public class Game {
 	private Player player3;
 	private Player player4;
 	private Field field = new Field();
+	private Server server;
+	private int readyToPlay = 0;   //indicates whether game is ready to play by all players
 	
 	public Game(){}
 	
-	public Game(Player player1, Player player2){
+	public Game(Player player1, Player player2) throws Exception{
 		this.player1 = player1;
 		player1.setNum(1);
 		this.player2 = player2;
 		player2.setNum(2);
 		numOfPlayers = 2;
-		start(numOfPlayers);
+		
+		server = new Server();
+		//waiting for clients
+		int tempPort;
+		while(readyToPlay < 3){
+			if((tempPort = server.receiveStuff(2)) != 0){      //receive stuff and send info to player
+				readyToPlay++;
+				
+				if(readyToPlay == 1){
+					server.sendPlayerInfo(player1);
+					player1.setPort(tempPort);
+				}
+				else if(readyToPlay == 2){
+					server.sendPlayerInfo(player2);
+					player2.setPort(tempPort);
+				}
+				
+				System.out.println("Someone joined");
+				if(readyToPlay == 2)
+					start(numOfPlayers);
+			}
+		}
 	}
 	
 	public Game(Player player1, Player player2,
-				Player player3, Player player4){
+				Player player3, Player player4) throws Exception{
 		this.player1 = player1;
 		player1.setNum(1);
 		this.player2 = player2;
@@ -33,10 +58,14 @@ public class Game {
 		this.player4 = player4;
 		numOfPlayers = 4;
 		player4.setNum(4);
+		
+		server = new Server();
+		//waiting for clients
+		//kokopyahin ko mmya from the 2p
 		start(numOfPlayers);
 	}
 	
-	public void start(int numOfPlayers){
+	public void start(int numOfPlayers) throws IOException{		
 		//lets see who goes first
 		if(numOfPlayers == 4){
 			if(player1.getHand().get(player1.getHand().size() - 1).equals(new Card(3,1))){
@@ -59,11 +88,15 @@ public class Game {
 		
 		if(numOfPlayers == 2){
 			if(player1.getHand().get(player1.getHand().size() - 1).equals(new Card(3,1))){
-				System.out.println("Player 1 goes first");
+				server.printStatus("Player 1 goes first", player1.getPort());
+				server.printStatus("Player 1 goes first", player2.getPort());
+				//System.out.println("Player 1 goes first");
 				player1.setControl(true);
 			}
 			if(player2.getHand().get(player2.getHand().size() - 1).equals(new Card(3,1))){
-				System.out.println("Player 2 goes first");
+				server.printStatus("Player 2 goes first", player1.getPort());
+				server.printStatus("Player 2 goes first", player2.getPort());
+				//System.out.println("Player 2 goes first");
 				player2.setControl(true);
 			}
 		}
@@ -83,7 +116,7 @@ public class Game {
 		}
 	}
 	
-	public void play2P(){	
+	public void play2P() throws IOException{	
 		int prevPlayer;
 		
 		if(player1.getControl())
@@ -93,23 +126,34 @@ public class Game {
 		
 		while((player1.getHand().size() != 0)&&(player2.getHand().size() != 0)){
 			if(prevPlayer == 2){
-				System.out.println("Player 1's turn");
+				server.printStatus("Player 1's turn", player1.getPort());
+				server.printStatus("Player 1's turn", player2.getPort());
+				//System.out.println("Player 1's turn");
 				playerTurn(player1);
 				prevPlayer = 1;
 			}
 			else{
-				System.out.println("Player 2's turn");
+				server.printStatus("Player 2's turn", player1.getPort());
+				server.printStatus("Player 2's turn", player2.getPort());
+				//System.out.println("Player 2's turn");
 				playerTurn(player2);
 				prevPlayer = 2;
 			}
 		}
-		if(player1.getHand().size() == 0)
-			System.out.println("Player 1 Wins!");
-		else if(player2.getHand().size() == 0)
-			System.out.println("Player 2 Wins!");
+		
+		if(player1.getHand().size() == 0){
+			server.printStatus("You Win!", player1.getPort());
+			server.printStatus("Player 1 Wins!", player2.getPort());
+			//System.out.println("Player 1 Wins!");
+		}
+		else if(player2.getHand().size() == 0){
+			server.printStatus("Player 2 Wins!", player1.getPort());
+			server.printStatus("You Win!", player2.getPort());
+			//System.out.println("Player 2 Wins!");
+		}
 	}
 	
-	public void play4P(){
+	public void play4P() throws IOException{
 		int prevPlayer;
 		int justFinished = 0;
 		
@@ -152,7 +196,7 @@ public class Game {
 	}
 	
 	//also returns if player just finished
-	public int process4P(Player player, int justFinished){
+	public int process4P(Player player, int justFinished) throws IOException{
 		if(!player.isDone()){
 			System.out.println("Player " + player.getNum() + "'s turn");
 			if(justFinished == 1){
@@ -185,14 +229,15 @@ public class Game {
 		return (ctr >= 3);
 	}
 	
-	public void playerTurn(Player player){
-		@SuppressWarnings("resource")
-		Scanner sc = new Scanner(System.in);
+	public void playerTurn(Player player) throws IOException{
+		//@SuppressWarnings("resource")
+		//Scanner sc = new Scanner(System.in);
 		ArrayList<Card> playerPicks = new ArrayList<Card>();
 		boolean invalidFlag = false;
 		
 		if(lastPlayerToPlace == player.getNum()){
-			System.out.println("You have control");
+			server.printStatus("You have control", player.getPort());
+			//System.out.println("You have control");
 			player.setControl(true);
 			field.clearCombi();
 		}
@@ -211,10 +256,14 @@ public class Game {
 			noControl(numOfPlayers);
 			
 			do{
-				System.out.println("Select the card/s you will pick");
-				System.out.println("Enter 999 to end and 0 to pass");     //in the gui this has got to change boi
-				pick = sc.nextInt();
-				sc.nextLine();
+				server.printStatus("Select the card/s you will pick\n" + 
+								   "Enter 999 to end and 0 to pass", player.getPort());
+				//System.out.println("Select the card/s you will pick");
+				//System.out.println("Enter 999 to end and 0 to pass");     //in the gui this has got to change boi
+				
+				
+				//pick = sc.nextInt();
+				//sc.nextLine();
 				if((pick != 999)&&(pick != 0))
 					playerPicks.add(player.getCard(pick - 1));    //coz in the display it doesnt start with 0
 				
@@ -225,8 +274,7 @@ public class Game {
 					if(field.getCurrCombi().size() != 0){
 						if(field.isValidFight(playerPicks)){     //meron nang pang update ng field dito
 							for(int i = playerPicks.size(); i > 0; i--)
-								player.removeCard(playerPicks.get(i-1));
-							//field.update(playerPicks);							
+								player.removeCard(playerPicks.get(i-1));							
 							invalidFlag = false;
 							lastPlayerToPlace = player.getNum();
 						}

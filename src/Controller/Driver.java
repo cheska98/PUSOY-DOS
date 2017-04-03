@@ -4,7 +4,7 @@ import java.util.*;
 import Model.*;
 
 public class Driver {
-	public static void main(String args[]){
+	public static void main(String args[]) throws Exception{
 		Deck deck = new Deck();
 		initializeDeck(deck);
 		//deck.displayAll();
