@@ -15,28 +15,28 @@ public class Driver {
 		Player player4 = new Player();
 		
 		//prompt how many players are participating
-		int partcipants = 2;
+		int partcipants = 4;
 		giveHand(player1, deck, partcipants);
 		giveHand(player2, deck, partcipants);
-		//giveHand(player3, deck, partcipants);
-		//giveHand(player4, deck, partcipants);
+		giveHand(player3, deck, partcipants);
+		giveHand(player4, deck, partcipants);
 		
 		player1.getHand().sort(new Card());
 		player2.getHand().sort(new Card());
-		//player3.getHand().sort(new Card());
-		//player4.getHand().sort(new Card());
+		player3.getHand().sort(new Card());
+		player4.getHand().sort(new Card());
 		
 		System.out.println("\nPlayer 1");
 		player1.displayHand();
 		System.out.println("\nPlayer 2");
 		player2.displayHand();
-//		System.out.println("\nPlayer 3");
-//		player3.displayHand();
-//		System.out.println("\nPlayer 4");
-//		player4.displayHand();
+		System.out.println("\nPlayer 3");
+		player3.displayHand();
+		System.out.println("\nPlayer 4");
+		player4.displayHand();
 		
-		new Game(player1, player2);
-		//new Game(player1, player2, player3, player4);
+		//new Game(player1, player2);
+		new Game(player1, player2, player3, player4);
 		
 		/*
 		//testing combination stuff

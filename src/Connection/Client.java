@@ -1,7 +1,18 @@
 package Connection;
 
-import java.io.*;  // Imported because we need the InputStream and OuputStream classes
-import java.net.*; // Imported because the Socket class is needed
+// Imported because we need the InputStream and OuputStream classes
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+// Imported because the Socket class is needed
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.util.ArrayList;
+
+import Model.Card;
  
 public class Client {
 	
@@ -78,6 +89,10 @@ class SenderThread extends Thread {
  
                 if (clientMessage.equals("."))
                 	break;
+                
+                if((Integer.parseInt(clientMessage) != 999) && 
+                   (Integer.parseInt(clientMessage) != 0))
+                	cs.addIndex(Integer.parseInt(clientMessage));
  
                 // Create byte buffer to hold the message to send
                 byte[] sendData = new byte[1024];
@@ -127,11 +142,11 @@ class ReceiverThread extends Thread {
  
             // Set up a DatagramPacket to receive the data into
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            System.out.println("Waiting for stuff...");
+            //System.out.println("Waiting for stuff...");
             try {
                 // Receive a packet from the server (blocks until the packets are received)
                 udpClientSocket.receive(receivePacket);
-                System.out.println("Receiving...");
+                //System.out.println("Receiving...");
                 // Extract the reply from the DatagramPacket      
                 String serverReply =  new String(receivePacket.getData(), 0, receivePacket.getLength());
                 
@@ -142,9 +157,13 @@ class ReceiverThread extends Thread {
                 	sendNum(); 
                 else if(serverReply.equals("printStatus"))
                 	receiveStatus();
-                
+                else if(serverReply.equals("removeNa"))
+                	removeCardsInClient();
+                else if(serverReply.equals("patinginNaman"))
+                	showCards();
+                	
                 // print to the screen
-                System.out.println("UDPClient: Response from Server: \"" + serverReply + "\"\n");
+                //System.out.println("UDPClient: Response from Server: \"" + serverReply + "\"\n");
  
                 Thread.yield();
             } 
@@ -194,7 +213,7 @@ class ReceiverThread extends Thread {
         	
         	cs.addCard(Integer.parseInt(cardNum), Integer.parseInt(cardSuit));
     	}
-    	//testLang();
+    	testLang();
     }
     
     public void confirm() throws IOException{
@@ -222,6 +241,21 @@ class ReceiverThread extends Thread {
     	udpClientSocket.receive(receivePacket);
     	String serverReply =  new String(receivePacket.getData(), 0, receivePacket.getLength());
     	System.out.println(serverReply);
+    }
+    
+    public void removeCardsInClient() throws IOException{
+    	ArrayList<Card> tempList = new ArrayList<Card>();
+    	for(Integer i: cs.indexes){
+    		tempList.add(cs.getCard(i));
+    	}
+    	for(Card c: tempList){
+    		cs.removeCard(c);
+    	}
+    	cs.clearList();
+    }
+    
+    public void showCards(){
+    	cs.displayHand();
     }
     
     public void testLang(){

@@ -55,7 +55,7 @@ public class Player {
 	}
 	
 	public void removeCard(int index){
-		hand.remove(index);
+		hand.remove(index); 
 	}
 	
 	public void removeCard(Card card){

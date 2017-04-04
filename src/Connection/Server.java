@@ -57,10 +57,21 @@ public class Server {
 		else if (sendWhere == 2) { // send data to newly joined client
 			this.tempPort = receivePacket.getPort();
 			this.tempIP = clientIP;
+			portSet.add(tempPort);
 			return tempPort;
 		}
 
 		return 0;
+	}
+
+	public int receiveResponse() throws IOException {
+		byte[] receiveData = new byte[1024];
+		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		udpServerSocket.receive(receivePacket);
+		String clientMessage = (new String(receivePacket.getData(), receivePacket.getOffset(),
+				receivePacket.getLength())).trim();
+
+		return Integer.parseInt(clientMessage);
 	}
 
 	public void sendStuff(DatagramPacket receivePacket, InetAddress clientIP, String clientMessage) throws IOException {
@@ -156,7 +167,7 @@ public class Server {
 		byte[] sendData = new byte[1024];
 		byte[] receiveData = new byte[1024];
 		sendData = "isItYou".getBytes();
-		
+
 		for (Integer port : portSet) {
 			// Create a DatagramPacket to send, using the buffer, the
 			// clients IP address, and the clients port
@@ -164,33 +175,86 @@ public class Server {
 			System.out.println("Searching..");
 			// Send the echoed message
 			udpServerSocket.send(sendPacket);
-			
+
 			// Create an empty DatagramPacket packet
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
-			// Block until there is a packet to receive, then receive it (into our
+			// Block until there is a packet to receive, then receive it (into
+			// our
 			// empty packet)
 			udpServerSocket.receive(receivePacket);
 			String searchResult = (new String(receivePacket.getData(), receivePacket.getOffset(),
 					receivePacket.getLength())).trim();
-			if(Integer.parseInt(searchResult) == playerNum){
+			if (Integer.parseInt(searchResult) == playerNum) {
 				return port;
 			}
 		}
 		return 0;
 	}
-	
-	public void printStatus(String message, int port) throws IOException{
+
+	public void printStatus(String message, int port) throws IOException {
 		byte[] sendData = new byte[1024];
-		
+
 		sendData = "printStatus".getBytes();
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, tempIP, port);
 		udpServerSocket.send(sendPacket);
-		
+
 		acknowledge("notified status");
-		
+
 		sendData = message.getBytes();
 		sendPacket = new DatagramPacket(sendData, sendData.length, tempIP, port);
 		udpServerSocket.send(sendPacket);
+	}
+
+	public void removalOfCards(int port) throws IOException {
+		byte[] sendData = new byte[1024];
+
+		sendData = "removeNa".getBytes();
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, tempIP, port);
+		udpServerSocket.send(sendPacket);
+	}
+	
+	public void showThatHand(int port) throws IOException{
+		byte[] sendData = new byte[1024];
+
+		sendData = "patinginNaman".getBytes();
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, tempIP, port);
+		udpServerSocket.send(sendPacket);
+	}
+
+	public void sendField(Field field) throws IOException{    //actually sends a card
+		String j, k;
+		for (Integer port : portSet) {
+			printStatus("Cards on Field: ", port);
+			
+			for(Card c: field.getCurrCombi()){
+				switch(c.getNumber()){
+					case 11: j = "J";
+						break;
+					case 12: j = "Q";
+						break;
+					case 13: j = "K";
+						break;
+					case 14: j = "A";
+						break;
+					case 15: j = "2";
+						break;
+					default: j = Integer.toString(c.getNumber());
+				}
+				
+				switch(c.getSuit()){
+					case 1: k = "C";
+						break;
+					case 2: k = "S";
+						break;
+					case 3: k = "H";
+						break;
+					case 4: k = "D";
+						break;
+					default: k = "wat happened";
+				}
+				printStatus(j + " " + k, port);
+			}
+		}
 	}
 }

@@ -61,41 +61,82 @@ public class Game {
 		
 		server = new Server();
 		//waiting for clients
-		//kokopyahin ko mmya from the 2p
-		start(numOfPlayers);
+		int tempPort;
+		while(readyToPlay < 5){
+			if((tempPort = server.receiveStuff(2)) != 0){      //receive stuff and send info to player
+				readyToPlay++;
+				
+				if(readyToPlay == 1){
+					server.sendPlayerInfo(player1);
+					player1.setPort(tempPort);
+				}
+				else if(readyToPlay == 2){
+					server.sendPlayerInfo(player2);
+					player2.setPort(tempPort);
+				}
+				else if(readyToPlay == 3){
+					server.sendPlayerInfo(player3);
+					player3.setPort(tempPort);
+				}
+				else if(readyToPlay == 4){
+					server.sendPlayerInfo(player4);
+					player4.setPort(tempPort);
+				}
+				
+				System.out.println("Someone joined");
+				if(readyToPlay == 4)
+					start(numOfPlayers);
+			}
+		}
 	}
 	
 	public void start(int numOfPlayers) throws IOException{		
 		//lets see who goes first
 		if(numOfPlayers == 4){
 			if(player1.getHand().get(player1.getHand().size() - 1).equals(new Card(3,1))){
-				System.out.println("Player 1 goes first");
+				server.printStatus("You go first", player1.getPort());
+				server.printStatus("Player 1 goes first", player2.getPort());
+				server.printStatus("Player 1 goes first", player3.getPort());
+				server.printStatus("Player 1 goes first", player4.getPort());
+				//System.out.println("Player 1 goes first");
 				player1.setControl(true);
 			}
 			if(player2.getHand().get(player2.getHand().size() - 1).equals(new Card(3,1))){
-				System.out.println("Player 2 goes first");
+				server.printStatus("Player 2 goes first", player1.getPort());
+				server.printStatus("You go first", player2.getPort());
+				server.printStatus("Player 2 goes first", player3.getPort());
+				server.printStatus("Player 2 goes first", player4.getPort());
+				//System.out.println("Player 2 goes first");
 				player2.setControl(true);
 			}
 			if(player3.getHand().get(player3.getHand().size() - 1).equals(new Card(3,1))){
-				System.out.println("Player 3 goes first");
+				server.printStatus("Player 3 goes first", player1.getPort());
+				server.printStatus("Player 3 goes first", player2.getPort());
+				server.printStatus("You go first", player3.getPort());
+				server.printStatus("Player 3 goes first", player4.getPort());
+				//System.out.println("Player 3 goes first");
 				player3.setControl(true);
 			}
 			if(player4.getHand().get(player4.getHand().size() - 1).equals(new Card(3,1))){
-				System.out.println("Player 4 goes first");
+				server.printStatus("Player 4 goes first", player1.getPort());
+				server.printStatus("Player 4 goes first", player2.getPort());
+				server.printStatus("Player 4 goes first", player3.getPort());
+				server.printStatus("You go first", player4.getPort());
+				//System.out.println("Player 4 goes first");
 				player4.setControl(true);
 			}
 		}
 		
 		if(numOfPlayers == 2){
 			if(player1.getHand().get(player1.getHand().size() - 1).equals(new Card(3,1))){
-				server.printStatus("Player 1 goes first", player1.getPort());
+				server.printStatus("You go first", player1.getPort());
 				server.printStatus("Player 1 goes first", player2.getPort());
 				//System.out.println("Player 1 goes first");
 				player1.setControl(true);
 			}
 			if(player2.getHand().get(player2.getHand().size() - 1).equals(new Card(3,1))){
 				server.printStatus("Player 2 goes first", player1.getPort());
-				server.printStatus("Player 2 goes first", player2.getPort());
+				server.printStatus("You go first", player2.getPort());
 				//System.out.println("Player 2 goes first");
 				player2.setControl(true);
 			}
@@ -126,7 +167,7 @@ public class Game {
 		
 		while((player1.getHand().size() != 0)&&(player2.getHand().size() != 0)){
 			if(prevPlayer == 2){
-				server.printStatus("Player 1's turn", player1.getPort());
+				server.printStatus("Your turn", player1.getPort());
 				server.printStatus("Player 1's turn", player2.getPort());
 				//System.out.println("Player 1's turn");
 				playerTurn(player1);
@@ -134,7 +175,7 @@ public class Game {
 			}
 			else{
 				server.printStatus("Player 2's turn", player1.getPort());
-				server.printStatus("Player 2's turn", player2.getPort());
+				server.printStatus("Your turn", player2.getPort());
 				//System.out.println("Player 2's turn");
 				playerTurn(player2);
 				prevPlayer = 2;
@@ -185,23 +226,45 @@ public class Game {
 			}
 		}
 		
-		if(!player1.isDone())
-			System.out.println("Player 1 Lost!");
-		else if(!player2.isDone())
-			System.out.println("Player 2 Lost!");
-		else if(!player3.isDone())
-			System.out.println("Player 3 Lost!");
-		else if(!player4.isDone())
-			System.out.println("Player 4 Lost!");
+		if(!player1.isDone()){
+			server.printStatus("You Lost :((", player1.getPort());
+			server.printStatus("Player 1 Lost", player2.getPort());
+			server.printStatus("Player 1 Lost", player3.getPort());
+			server.printStatus("Player 1 Lost", player4.getPort());
+			//System.out.println("Player 1 Lost!");
+		}
+		else if(!player2.isDone()){
+			server.printStatus("Player 2 Lost", player1.getPort());
+			server.printStatus("You Lost :((", player2.getPort());
+			server.printStatus("Player 2 Lost", player3.getPort());
+			server.printStatus("Player 2 Lost", player4.getPort());
+			//System.out.println("Player 2 Lost!");
+		}
+		else if(!player3.isDone()){
+			server.printStatus("Player 3 Lost", player1.getPort());
+			server.printStatus("Player 3 Lost", player2.getPort());
+			server.printStatus("You Lost :((", player3.getPort());
+			server.printStatus("Player 3 Lost", player4.getPort());
+			//System.out.println("Player 3 Lost!");
+		}
+		else if(!player4.isDone()){
+			server.printStatus("Player 4 Lost", player1.getPort());
+			server.printStatus("Player 4 Lost", player2.getPort());
+			server.printStatus("Player 4 Lost", player3.getPort());
+			server.printStatus("You Lost :((", player4.getPort());
+			//System.out.println("Player 4 Lost!");
+		}
 	}
 	
 	//also returns if player just finished
 	public int process4P(Player player, int justFinished) throws IOException{
 		if(!player.isDone()){
-			System.out.println("Player " + player.getNum() + "'s turn");
+			server.printStatus("Player " + player.getNum() +"'s turn", player.getPort());
+			//System.out.println("Player " + player.getNum() + "'s turn");
 			if(justFinished == 1){
 				justFinished = 0;
-				System.out.println("You have control");
+				server.printStatus("You have control", player.getPort());
+				//System.out.println("You have control");
 			}
 			playerTurn(player);
 			if(player.getHand().size()==0){
@@ -244,10 +307,14 @@ public class Game {
 		
 		System.out.println("Player " + player.getNum() + ":");      //should be changed to player name time
 		field.displayCurrCombi();
+		server.sendField(field);
 		
 		int pick;
 		do{
+			//this is in driver output
 			player.displayHand();
+			//this is for client
+			server.showThatHand(player.getPort());
 			pick = 999;
 			playerPicks.clear();
 			
@@ -261,7 +328,8 @@ public class Game {
 				//System.out.println("Select the card/s you will pick");
 				//System.out.println("Enter 999 to end and 0 to pass");     //in the gui this has got to change boi
 				
-				
+				pick = server.receiveResponse();
+				System.out.println("Pick: " + pick);
 				//pick = sc.nextInt();
 				//sc.nextLine();
 				if((pick != 999)&&(pick != 0))
@@ -279,7 +347,8 @@ public class Game {
 							lastPlayerToPlace = player.getNum();
 						}
 						else{
-							System.out.println("Boi di pwede yan invalid combi men");
+							server.printStatus("Boi di pwede yan invalid combi men", player.getPort());
+							//System.out.println("Boi di pwede yan invalid combi men");
 							invalidFlag = true;
 						}
 					}
@@ -292,11 +361,19 @@ public class Game {
 					}
 				}
 				else{
-					System.out.println("Boi di pwede yan invalid combi men");
+					server.printStatus("Boi di pwede yan invalid combi men", player.getPort());
+					//System.out.println("Boi di pwede yan invalid combi men");
 					invalidFlag = true;
 				}
 			}
 		}while(invalidFlag && (pick != 0));
+		
+		//starting from this part its all cause of network 
+		if(pick != 0){    //if hindi nagpass ung player, ibiig sabihin may valid combi na nalagay
+			//field
+			System.out.println("removing");
+			server.removalOfCards(player.getPort());
+		}
 	}
 	
 	public void noControl(int numOfPlayers){
