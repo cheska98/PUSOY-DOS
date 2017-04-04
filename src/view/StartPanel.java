@@ -38,7 +38,7 @@ public class StartPanel extends JPanel {
 	private void initialize() {
 
 		setLayout(null);
-		setSize(1366, 768);
+		setSize(1366, 748);
 
 		startTitle = new JLabel("");
 		startTitleimg = new ImageIcon(new ImageIcon(StartPanel.class.getResource("/img/startTitle.png")).getImage()
@@ -65,7 +65,7 @@ public class StartPanel extends JPanel {
 		bgimg = new ImageIcon(new ImageIcon(StartPanel.class.getResource("/img/bg.png")).getImage()
 				.getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
 		bg.setIcon(bgimg);
-		bg.setBounds(0, 0, 1366, 768);
+		bg.setBounds(0, 0, 1366, 748);
 
 		addComponents();
 		addListeners();
@@ -95,8 +95,7 @@ public class StartPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
-			vc.showPanelPC1("GamePanel");
-			JOptionPane.showMessageDialog(null, "You are Player 1.");
+			vc.showPanelVC("GamePanel");
 		}
 
 	}

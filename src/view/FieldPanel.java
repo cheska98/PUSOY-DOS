@@ -4,18 +4,22 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class StackPanel extends JPanel {
+import control.ViewController;
+
+public class FieldPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
+	private ViewController vc;
 	private JLabel[] card;
 	private int height = 70;
 	private int width = 58;
 	private int x = 145;
 	private int y = 25;
 
-	public StackPanel() {
+	public FieldPanel(ViewController vc) {
 		
+		this.vc = vc;
 		initialize();
 		
 	}
@@ -41,12 +45,16 @@ public class StackPanel extends JPanel {
 	
 	private void setCards() {
 		
-		card[0].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/diamonds/11D.png")));
-		card[1].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/diamonds/12D.png")));
-		card[2].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/diamonds/13D.png")));
-		card[3].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/hearts/11H.png")));
-		card[4].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/hearts/12H.png")));
+		//card[0].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/diamonds/11D.png")));
+		//card[1].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/diamonds/12D.png")));
+		//card[2].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/diamonds/13D.png")));
+		//card[3].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/hearts/11H.png")));
+		//card[4].setIcon(new ImageIcon(DeckPanel.class.getResource("/img/hearts/12H.png")));
 	
+	}
+	
+	public void addCard(int a) {
+		
 	}
 	
 	public void removeCards() {

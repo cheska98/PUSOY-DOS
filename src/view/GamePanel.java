@@ -1,19 +1,23 @@
 package view;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-
-import control.ViewController;
-
-import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextPane;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+
+import control.ViewController;
 
 public class GamePanel extends JPanel {
 
@@ -21,7 +25,7 @@ public class GamePanel extends JPanel {
 
 	private ViewController vc;
 	private DeckPanel deckPanel;
-	private StackPanel stackPanel;
+	private FieldPanel fieldPanel;
 	private JButton swapBtn;
 	private JButton placeBtn;
 	private JButton passBtn;
@@ -45,12 +49,12 @@ public class GamePanel extends JPanel {
 	private void initialize() {
 
 		setLayout(null);
-		setSize(1366, 768);
+		setSize(1366, 748);
 
-		stackPanel = new StackPanel();
-		stackPanel.setBounds(112, 103, 736, 123);
+		fieldPanel = new FieldPanel(vc);
+		fieldPanel.setBounds(112, 103, 736, 123);
 
-		deckPanel = new DeckPanel();
+		deckPanel = new DeckPanel(vc);
 		deckPanel.setBounds(112, 338, 736, 228);
 
 		smallTitle = new JLabel("");
@@ -101,22 +105,23 @@ public class GamePanel extends JPanel {
 		textBox = new JTextPane();
 		textBox.setFont(new Font("Consolas", Font.PLAIN, 17));
 		textBox.setEditable(false);
-		textBox.setBounds(976, 0, 387, 768);
+		textBox.setBounds(976, 0, 387, 748);
+		textBox.setText("Game has started...");
 
 		bg = new JLabel("");
-		bg.setBounds(0, 0, 1366, 768);
+		bg.setBounds(0, 0, 1366, 748);
 		bgimg = new ImageIcon(new ImageIcon(GamePanel.class.getResource("/img/bg.png")).getImage()
-				.getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
+				.getScaledInstance(1366, 748, Image.SCALE_SMOOTH));
 		bg.setIcon(bgimg);
 
 		addComponents();
 		addListeners();
-		setText();
+		showMessage("HIIIIIIIIIIII");
 
 	}
 
 	private void addComponents() {
-		add(stackPanel);
+		add(fieldPanel);
 		add(deckPanel);
 		add(smallTitle);
 		add(lineLbl);
@@ -144,8 +149,27 @@ public class GamePanel extends JPanel {
 
 	}
 
-	private void setText() {
-		textBox.setText("Player 2 placed 4H, 4C, 3H, 3S, 3C.");
+	public void append(String text) {
+
+		Color c = Color.BLACK;
+
+		StyleContext sc = StyleContext.getDefaultStyleContext();
+		AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
+
+		aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Consolas");
+		aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
+
+		int len = textBox.getDocument().getLength();
+		textBox.setCaretPosition(len);
+		textBox.setCharacterAttributes(aset, false);
+		textBox.replaceSelection(text);
+
+	}
+
+	public void showMessage(String text) {
+
+		append(text + "\n");
+
 	}
 
 	class SwapBtn implements ActionListener {
@@ -154,9 +178,11 @@ public class GamePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// if only 2 cards are selected and get the cards' indeces
 			// then
-			/*if (!(deckPanel.swapCards(2, 3))) {
-				JOptionPane.showMessageDialog(null, "Invalid!", "ERROR", JOptionPane.ERROR_MESSAGE);
-			}*/
+			/*
+			 * if (!(deckPanel.swapCards(2, 3))) {
+			 * JOptionPane.showMessageDialog(null, "Invalid!", "ERROR",
+			 * JOptionPane.ERROR_MESSAGE); }
+			 */
 		}
 
 	}
@@ -165,7 +191,15 @@ public class GamePanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			
+			if (vc.playersTurn()) {
+				if (deckPanel.getIsSelected() > 0) {
+					
+					deckPanel.removeCard(0);
+					fieldPanel.addCard(0);
+				} else
+					JOptionPane.showMessageDialog(null, "Select cards to place first!", "Error", JOptionPane.ERROR_MESSAGE);
+			} else
+				JOptionPane.showMessageDialog(null, "Please wait for your turn.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 
 	}
@@ -174,7 +208,10 @@ public class GamePanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+			if (vc.playersTurn()) {
 
+			} else
+				JOptionPane.showMessageDialog(null, "Please wait for your turn.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 
 	}
@@ -186,7 +223,7 @@ public class GamePanel extends JPanel {
 
 			if (JOptionPane.showConfirmDialog(null, "Are you sure?", "END GAME",
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-				vc.showPanelPC1("StartPanel");
+				vc.showPanelVC("StartPanel");
 
 		}
 

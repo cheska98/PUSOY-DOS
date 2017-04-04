@@ -16,7 +16,7 @@ public class MainFrame extends JFrame {
 	private StartPanel startPanel;
 	private GamePanel gamePanel;
 	private int width = 1366;
-	private int height = 768;
+	private int height = 748;
 	
 	public MainFrame(ViewController vc) {
 		
