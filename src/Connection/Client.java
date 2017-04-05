@@ -4,7 +4,6 @@ package Connection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 // Imported because the Socket class is needed
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -13,6 +12,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 import Model.Card;
+import control.ViewController;
  
 public class Client {
 	
@@ -22,7 +22,7 @@ public class Client {
  
         // The default port     
         int clientport = 7777;
-        String host = "localhost";   //change to localhost if ever
+        String host = "localhost";   //change to kaninuman if ever
  
         if (args.length < 1) {
            System.out.println("Usage: UDPClient " + "Now using host = " + host + ", Port# = " + clientport);
@@ -38,10 +38,13 @@ public class Client {
         InetAddress ia = InetAddress.getByName(host);
         
         cs = new ClientSide();
-        
+        ViewController vc = new ViewController(cs.player);
+
         SenderThread sender = new SenderThread(ia, clientport, cs);
+        sender.setVC(vc);
         sender.start();
         ReceiverThread receiver = new ReceiverThread(sender.getSocket(), cs);
+        receiver.setVC(vc);
         receiver.start();
     }
 }      
@@ -53,6 +56,7 @@ class SenderThread extends Thread {
     private DatagramSocket udpClientSocket;
     private boolean stopped = false;
     private ClientSide cs;
+    private ViewController vc;
  
     public SenderThread(InetAddress address, int serverport, ClientSide cs) throws SocketException {
         this.serverIPAddress = address;
@@ -61,6 +65,9 @@ class SenderThread extends Thread {
         // Create client DatagramSocket
         this.udpClientSocket = new DatagramSocket();
         this.udpClientSocket.connect(serverIPAddress, serverport);
+    }
+    public void setVC(ViewController vc){
+    	this.vc = vc;
     }
     public void halt() {
         this.stopped = true;
@@ -83,30 +90,39 @@ class SenderThread extends Thread {
             {
                 if (stopped)
                     return;
- 
-                // Message to send
-                String clientMessage = inFromUser.readLine();
- 
-                if (clientMessage.equals("."))
-                	break;
+
+                if(vc.buttonIsClicked()){
+                	System.out.println("Getting inputs..");
+	                ArrayList<Integer> inputs = vc.getCardIndeces();
+	                
+	                for(Integer i: inputs){
+		                // Message to send
+		                //String clientMessage = inFromUser.readLine();
+		                String clientMessage = Integer.toString(i);
+		 
+		                if (clientMessage.equals("."))
+		                	break;
+		                
+		                if((Integer.parseInt(clientMessage) != 999) && 
+		                   (Integer.parseInt(clientMessage) != 0))
+		                	cs.addIndex(Integer.parseInt(clientMessage));
+		 
+		                // Create byte buffer to hold the message to send
+		                byte[] sendData = new byte[1024];
+		 
+		                // Put this message into our empty buffer/array of bytes
+		                sendData = clientMessage.getBytes();
+		 
+		                // Create a DatagramPacket with the data, IP address and port number
+		                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIPAddress, serverport);
+		 
+		                // Send the UDP packet to server
+		                System.out.println("I just sent: "+clientMessage);
+		                udpClientSocket.send(sendPacket);
+	                }
+	                vc.setButton(false);
+                }
                 
-                if((Integer.parseInt(clientMessage) != 999) && 
-                   (Integer.parseInt(clientMessage) != 0))
-                	cs.addIndex(Integer.parseInt(clientMessage));
- 
-                // Create byte buffer to hold the message to send
-                byte[] sendData = new byte[1024];
- 
-                // Put this message into our empty buffer/array of bytes
-                sendData = clientMessage.getBytes();
- 
-                // Create a DatagramPacket with the data, IP address and port number
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIPAddress, serverport);
- 
-                // Send the UDP packet to server
-                System.out.println("I just sent: "+clientMessage);
-                udpClientSocket.send(sendPacket);
- 
                 Thread.yield();
             }
         }
@@ -121,12 +137,15 @@ class ReceiverThread extends Thread {
     private DatagramSocket udpClientSocket;
     private boolean stopped = false;
     private ClientSide cs;
+    private ViewController vc;
  
     public ReceiverThread(DatagramSocket ds, ClientSide cs) throws SocketException {
         this.udpClientSocket = ds;
         this.cs = cs;
     }
- 
+    public void setVC(ViewController vc){
+    	this.vc = vc;
+    }
     public void halt() {
         this.stopped = true;
     }
@@ -233,7 +252,7 @@ class ReceiverThread extends Thread {
     }
     
     public void receiveStatus() throws IOException{
-    	confirm();  //to tell server client is ready to accept
+    	//confirm();  //to tell server client is ready to accept
     	
     	byte[] receiveData = new byte[1024];
     	

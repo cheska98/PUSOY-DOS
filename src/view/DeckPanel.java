@@ -38,11 +38,11 @@ public class DeckPanel extends JPanel {
 	public DeckPanel(ViewController vc) {
 
 		this.vc = vc;
-		initialize();
+		//initialize();
 
 	}
 
-	private void initialize() {
+	public void initialize() {
 
 		setLayout(null);
 		setOpaque(false);
@@ -76,8 +76,7 @@ public class DeckPanel extends JPanel {
 
 	}
 
-	private void setCards() {
-		System.out.println("\n");
+	public void setCards() {
 		for (int a = 0; a < 13; a++) {
 			number = vc.getNumber(a);
 			suitNumber = vc.getSuit(a);
@@ -115,13 +114,15 @@ public class DeckPanel extends JPanel {
 		return selected;
 	}
 
-	public ArrayList<Integer> cardIndeces() {
+	public ArrayList<Integer> getCardIndeces() {
 		ArrayList<Integer> indeces = new ArrayList<Integer>();
 		for (int j = 0; j < 13; j++) {
-			if (card[j].getBorder() == Color.YELLOW) {
-				indeces.add(j);
+			LineBorder b = (LineBorder) card[j].getBorder();
+			if (b.getLineColor() == Color.YELLOW) {
+				indeces.add(j+1);   //to match the display echos bastaaa
 			}
 		}
+		indeces.add(999); //pang end lang
 		return indeces;
 	}
 

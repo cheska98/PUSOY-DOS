@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -12,10 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 
 import control.ViewController;
 
@@ -116,7 +113,6 @@ public class GamePanel extends JPanel {
 
 		addComponents();
 		addListeners();
-		showMessage("HIIIIIIIIIIII");
 
 	}
 
@@ -150,7 +146,7 @@ public class GamePanel extends JPanel {
 	}
 
 	public void append(String text) {
-
+/*
 		Color c = Color.BLACK;
 
 		StyleContext sc = StyleContext.getDefaultStyleContext();
@@ -163,7 +159,9 @@ public class GamePanel extends JPanel {
 		textBox.setCaretPosition(len);
 		textBox.setCharacterAttributes(aset, false);
 		textBox.replaceSelection(text);
-
+*/
+		String newText = textBox.getText() + "\n" + text;
+		textBox.setText(newText);
 	}
 
 	public void showMessage(String text) {
@@ -171,7 +169,15 @@ public class GamePanel extends JPanel {
 		append(text + "\n");
 
 	}
-
+	
+	public ArrayList<Integer> getCardFromDP() {
+		return deckPanel.getCardIndeces();
+	}
+	
+	public DeckPanel getDeckPanel(){
+		return this.deckPanel;
+	}
+	
 	class SwapBtn implements ActionListener {
 
 		@Override
@@ -191,15 +197,7 @@ public class GamePanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			if (vc.playersTurn()) {
-				if (deckPanel.getIsSelected() > 0) {
-					
-					deckPanel.removeCard(0);
-					fieldPanel.addCard(0);
-				} else
-					JOptionPane.showMessageDialog(null, "Select cards to place first!", "Error", JOptionPane.ERROR_MESSAGE);
-			} else
-				JOptionPane.showMessageDialog(null, "Please wait for your turn.", "Error", JOptionPane.ERROR_MESSAGE);
+			vc.setButton(true);
 		}
 
 	}

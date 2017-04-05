@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -94,8 +95,13 @@ public class StartPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-
+			JFrame frame = new JFrame("Input Name");
+		    // prompt the user to enter their name
+		    String name = JOptionPane.showInputDialog(frame, "What's your name?");
+			vc.updateTitle(name);
+			
 			vc.showPanelVC("GamePanel");
+			vc.getDeckPanel().initialize();
 		}
 
 	}

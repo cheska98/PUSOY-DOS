@@ -105,7 +105,6 @@ public class Server {
 	public void sendPlayerInfo(Player player) throws IOException {
 
 		int num = player.getNum();
-		boolean control = player.getControl();
 		byte[] sendData = new byte[1024];
 		DatagramPacket sendPacket;
 
@@ -199,7 +198,7 @@ public class Server {
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, tempIP, port);
 		udpServerSocket.send(sendPacket);
 
-		acknowledge("notified status");
+		//acknowledge("notified status");
 
 		sendData = message.getBytes();
 		sendPacket = new DatagramPacket(sendData, sendData.length, tempIP, port);

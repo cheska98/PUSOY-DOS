@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
 		
 	}
 	
-	private void initializePanels() {
+	public void initializePanels() {
 		
 		gamePanel = new GamePanel(vc);
 		gamePanel.setBounds(0, 0, width, height);
@@ -65,8 +65,15 @@ public class MainFrame extends JFrame {
 	
 	public void showPanelMF(String name) {
 		
-		initializePanels();
 		rootPanel.showPanel(name);
 		
+	}
+	
+	public StartPanel getStartPanel(){
+		return this.startPanel;
+	}
+	
+	public GamePanel getGamePanel(){
+		return this.gamePanel;
 	}
 }

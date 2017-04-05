@@ -6,7 +6,7 @@ import Model.Card;
 import Model.Player;
 
 public class ClientSide {
-	private Player player;
+	public Player player;
 	public ArrayList<Integer> indexes = new ArrayList<Integer>();
 	
 	public ClientSide(){
