@@ -121,6 +121,23 @@ class SenderThread extends Thread {
 		                udpClientSocket.send(sendPacket);
 	                }
 	                vc.setButton(false);
+                } else if(vc.passIsActive()){
+                	String clientMessage = "0";
+	 
+	                // Create byte buffer to hold the message to send
+	                byte[] sendData = new byte[1024];
+	 
+	                // Put this message into our empty buffer/array of bytes
+	                sendData = clientMessage.getBytes();
+	 
+	                // Create a DatagramPacket with the data, IP address and port number
+	                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIPAddress, serverport);
+	 
+	                // Send the UDP packet to server
+	                System.out.println("I just sent: "+clientMessage);
+	                udpClientSocket.send(sendPacket);
+	                
+	                vc.setPass(false);
                 }
                 
                 Thread.yield();

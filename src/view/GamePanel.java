@@ -206,10 +206,7 @@ public class GamePanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			if (vc.playersTurn()) {
-
-			} else
-				JOptionPane.showMessageDialog(null, "Please wait for your turn.", "Error", JOptionPane.ERROR_MESSAGE);
+			vc.setPass(true);
 		}
 
 	}

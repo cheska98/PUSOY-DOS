@@ -17,6 +17,7 @@ public class ViewController {
 	private Player player;
 	private ArrayList<Card> deck = new ArrayList<Card>();
 	private boolean buttonIsClicked = false;
+	private boolean passIsActive = false;
 
 	public ViewController(Player player) {
 
@@ -61,11 +62,19 @@ public class ViewController {
 		return this.buttonIsClicked;
 	}
 	
+	public boolean passIsActive(){
+		return this.passIsActive;
+	}
+	
 	public DeckPanel getDeckPanel(){
 		return this.gamePanel.getDeckPanel();
 	}
 	
 	public void setButton(boolean b) {
 		buttonIsClicked = b;
+	}
+	
+	public void setPass(boolean b) {
+		passIsActive = b;
 	}
 }
